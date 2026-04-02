@@ -1,0 +1,21 @@
+{
+  "endpoint": "/git/branch/github",
+  "method": "POST",
+  "input_query_strings": ["repo", "uid"],
+  {{ include "auth0_input_headers.tmpl" }},
+    "extra_config": {
+    {{ include "auth0_validator.tmpl" }}
+  },
+  "backend": [
+    {
+      "host": [
+        {{ include "backend_host.tmpl" }}
+      ],
+       "method": "POST",
+       "url_pattern": "/git/branch/github",
+         "extra_config": {
+          {{ include "circuit_breaker.tmpl" }}
+      }
+    }
+  ]
+}

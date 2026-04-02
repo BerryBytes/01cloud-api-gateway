@@ -1,0 +1,18 @@
+{
+  "endpoint": "/webhook/{environment_id}/{github}",
+  "method": "POST",
+  {{ include "auth0_input_headers.tmpl" }},
+
+  "backend": [
+    {
+      "host": [
+        {{ include "backend_host.tmpl" }}
+      ],
+      "method": "POST",
+      "url_pattern": "/webhook/{environment_id}/{github}",
+      "extra_config": {
+        {{ include "circuit_breaker.tmpl" }}
+      }
+    }
+  ]
+}

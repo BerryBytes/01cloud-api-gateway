@@ -1,0 +1,21 @@
+{
+  "endpoint": "/create-cluster/vcluster/validate",
+  "method": "GET",
+  "input_query_strings": ["name", "namespace"],
+  {{ include "auth0_input_headers.tmpl" }},
+  "extra_config": {
+    {{ include "auth0_validator.tmpl" }}
+  },
+  "backend": [
+    {
+      "host": [
+        {{ include "backend_host.tmpl" }}
+      ],
+      "method": "GET",
+      "url_pattern": "/create-cluster/vcluster/validate",
+      "extra_config": {
+        {{ include "circuit_breaker.tmpl" }}
+      }
+    }
+  ]
+}

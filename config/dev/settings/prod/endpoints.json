@@ -1,0 +1,13 @@
+{
+    "endpoints": [
+        {
+            "endpoint": "/v1/echo/{path}",
+            "method": "GET",
+            "input_headers": ["Authorization"],
+            "input_query_strings": ["*"],
+            "output_encoding": "json-collection",
+            "backend_url_pattern": "/api/{path}",
+            "backend_host": "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+        }
+    ]
+}

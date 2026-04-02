@@ -1,0 +1,22 @@
+{
+  "endpoint": "/public/file/subscriptions.json",
+  "method": "GET",
+       {{ include "auth0_input_headers.tmpl" }},
+   "extra_config":{
+  {{ include "auth0_validator.tmpl" }}
+   },
+  "backend": [
+    {
+      "host": [
+        {{ include "backend_host.tmpl" }}
+      ],
+       "method": "GET",
+      "url_pattern": "/public/file/subscriptions.json",
+        "extra_config": {         
+          {{include "martian_cache_modifier.tmpl"}},
+          {{ include "cache_control.tmpl"}},
+          {{ include "circuit_breaker.tmpl" }}
+      }
+    }
+  ]
+}

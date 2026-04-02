@@ -1,0 +1,25 @@
+{
+  "endpoint": "/registry-config",
+  "method": "GET",
+  "output_encoding": "json-collection",
+  "is_collection": true,
+  {{ include "auth0_input_headers.tmpl" }},
+  "extra_config": {
+    {{ include "auth0_validator.tmpl" }}
+  },
+  "backend": [
+    {
+      "host": [
+        {{ include "backend_host.tmpl" }}
+      ],
+      "method": "GET",
+      "url_pattern": "/registry-config",
+      "is_collection": true,
+      "output_encoding": "json-collection",
+      "extra_config": {
+        {{ include "circuit_breaker.tmpl" }}
+      }
+    }
+  ]
+}
+        

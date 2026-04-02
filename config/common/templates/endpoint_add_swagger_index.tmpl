@@ -1,0 +1,13 @@
+{
+  "endpoint": "/swagger/index.html",
+  "method": "GET",
+  "output_encoding": "no-op",
+  "backend": [
+    {
+      "host": [{{- include "backend_host.tmpl" -}}],
+      "method": "GET",
+      "url_pattern": "/swagger/index.html",
+      "encoding": "no-op"
+    }
+  ]
+}

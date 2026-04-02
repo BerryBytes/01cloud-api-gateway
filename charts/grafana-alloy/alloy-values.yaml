@@ -1,0 +1,12 @@
+
+alloy:
+  configMap: 
+    create: false 
+    content: ''
+    name: alloy-config
+    key: config.alloy
+
+  mounts:
+    varlog: true
+    dockercontainers: false
+    extra: []

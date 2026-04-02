@@ -1,0 +1,21 @@
+{
+  "endpoint": "user/{id}/change-admin-status",
+  "method": "GET",
+  "input_query_strings":["is_admin"],
+  {{ include "auth0_input_headers.tmpl" }},
+  "extra_config": {
+    {{ include "auth0_validator.tmpl" }}
+  },
+  "backend": [
+    {
+      "host": [
+        {{ include "backend_host.tmpl" }}
+      ],
+      "method": "GET",
+      "url_pattern": "user/{id}/change-admin-status",
+      "extra_config": {
+        {{ include "circuit_breaker.tmpl" }}
+      }
+    }
+  ]
+}

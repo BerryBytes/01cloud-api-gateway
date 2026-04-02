@@ -1,0 +1,21 @@
+{
+  "endpoint": "/monitoring/alert-status/{alert_id}",
+  "method": "GET",
+ {{ include "auth0_input_headers.tmpl" }},
+   "extra_config":{
+  {{ include "auth0_validator.tmpl" }}
+   },
+   "input_query_strings":["state_type","type"],
+  "backend": [
+    {
+      "host": [
+        {{ include "backend_host.tmpl" }}
+      ],
+       "method": "GET",
+      "url_pattern": "/monitoring/alert-status/{alert_id}",
+         "extra_config": {
+          {{ include "circuit_breaker.tmpl" }}
+      }
+    }
+  ]
+}

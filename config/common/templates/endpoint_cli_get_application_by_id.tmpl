@@ -1,0 +1,17 @@
+{
+  "endpoint": "/cli/application/{id}",
+  "method": "GET",
+  {{ include "auth0_input_headers.tmpl" }},
+  "backend": [
+    {
+      "host": [
+        {{ include "backend_host.tmpl" }}
+      ],
+      "method": "GET",
+      "url_pattern": "/application/{id}",
+      "extra_config": {
+        {{ include "circuit_breaker.tmpl" }}
+      }
+    }
+  ]
+}

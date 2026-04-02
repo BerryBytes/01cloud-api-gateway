@@ -1,0 +1,17 @@
+{
+  "endpoint": "/cli/create-cluster/{id}/install-package",
+  "method": "POST",
+  {{ include "auth0_input_headers.tmpl" }},
+  "backend": [
+    {
+      "host": [
+        {{ include "backend_host.tmpl" }}
+      ],
+      "method": "POST",
+      "url_pattern": "/create-cluster/{id}/install-package",
+      "extra_config": {
+        {{ include "circuit_breaker.tmpl" }}
+      }
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "endpoint": "/cli/profile",
+  "method": "PUT",
+  {{ include "auth0_input_headers.tmpl" }},
+  "extra_config": {
+    {{ include "auth0_validator.tmpl" }}
+  },
+"output_encoding": "no-op",
+"input_headers":["*"],
+  "backend": [
+    {
+      "host": [
+        {{ include "backend_host.tmpl" }}
+      ],
+      "encoding": "no-op",
+      "method": "PUT",
+      "url_pattern": "/profile",
+      "extra_config": {
+        {{ include "circuit_breaker.tmpl" }}
+      }
+    }
+  ]
+}

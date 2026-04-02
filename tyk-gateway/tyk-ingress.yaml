@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: zeronecloud-issuer
+    kubernetes.io/ingress.class: nginx
+    meta.helm.sh/release-name: tyk-gateway
+    meta.helm.sh/release-namespace: 01cloud
+    nginx.org/websocket-services: gateway-svc-tyk-oss-tyk-gateway
+  name: tyk-gateway-ingress
+  namespace: 01cloud-stable
+spec:
+  rules:
+  - host: ws-gateway.01cloud.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: tyk-gateway
+            port:
+              number: 8080
+        path: /
+        pathType: Prefix
+  tls:
+  - hosts:
+    - ws-gateway.01cloud.com
+    secretName: zerone-tls-cert

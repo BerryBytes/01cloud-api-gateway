@@ -1,0 +1,79 @@
+replicas: 1
+
+image:
+  registry: docker.io
+  repository: grafana/grafana
+  tag: ""
+  sha: ""
+  pullPolicy: IfNotPresent
+  pullSecrets: []
+testFramework:
+  enabled: false
+
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 472
+  runAsGroup: 472
+  fsGroup: 472
+
+containerSecurityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+  seccompProfile:
+    type: RuntimeDefault
+
+# Enable creating the grafana configmap
+createConfigmap: true
+extraEmptyDirMounts: []
+
+service:
+  enabled: true
+  type: ClusterIP
+
+resources: 
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+persistence:
+  type: pvc
+  enabled: true
+  volumeName: ""
+  accessModes:
+    - ReadWriteOnce
+  size: 10Gi
+  finalizers:
+    - kubernetes.io/pvc-protection
+  extraPvcLabels: {}
+  disableWarning: false
+  lookupVolumeName: true
+
+
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        access: proxy
+        url: http://prometheus-server.zerone-monitoring.svc.cluster.local
+        isDefault: true
+      - name: Loki
+        type: loki
+        access: proxy
+        url: http://loki-gateway.loki.svc.cluster.local
+        basicAuth: true
+        basicAuthUser: changeme
+        secureJsonData:
+          basicAuthPassword: changeme
+          httpHeaderValue1: "changeme"  
+        jsonData:
+          httpHeaderName1: "X-Scope-OrgID"
+
+initChownData:
+  enabled: false

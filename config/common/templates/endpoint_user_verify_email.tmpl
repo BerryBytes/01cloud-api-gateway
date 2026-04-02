@@ -1,0 +1,16 @@
+{
+  "endpoint": "/user/verify/{token}",
+  "method": "POST",
+  "backend": [
+    {
+      "host": [
+        {{ include "backend_host.tmpl" }}
+      ],
+      "method": "POST",
+      "url_pattern": "/user/verify/{token}",
+      "extra_config": {
+          {{ include "circuit_breaker.tmpl" }}
+      }
+    }
+  ]
+}

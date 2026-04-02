@@ -1,0 +1,82 @@
+name: KrakenD Configuration Lint
+
+on:
+  push:
+    branches:
+      - '**'
+      - '!main'
+  pull_request:
+    branches-ignore:
+      - main
+
+jobs:
+  lint_krakend_config:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Create output directory
+        run: mkdir -p tmp
+
+      - name: Lint Dev KrakenD configuration
+        run: |
+          mkdir -p tmp
+          chmod 777 tmp
+          touch tmp/lint.json
+
+          echo "Running KrakenD linting check..."
+          docker run --rm \
+            --user root \
+            -v "$GITHUB_WORKSPACE:/etc/krakend" \
+            -w /etc/krakend \
+            -e FC_ENABLE=1 \
+            -e FC_SETTINGS=config/dev/settings/prod \
+            -e FC_PARTIALS=config/dev/partials \
+            -e FC_TEMPLATES=config/common/templates \
+            -e FC_OUT=tmp/lint.json \
+            -e SERVICE_NAME="KrakenD API Gateway" \
+            krakend:2.10.0 check -c "krakend.tmpl"
+
+      - name: Lint Prod KrakenD configuration
+        run: |
+          mkdir -p tmp
+          chmod 777 tmp
+          touch tmp/lint.json
+
+          echo "Running KrakenD linting check..."
+          docker run --rm \
+            --user root \
+            -v "$GITHUB_WORKSPACE:/etc/krakend" \
+            -w /etc/krakend \
+            -e FC_ENABLE=1 \
+            -e FC_SETTINGS=config/prod/settings/prod \
+            -e FC_PARTIALS=config/prod/partials \
+            -e FC_TEMPLATES=config/common/templates \
+            -e FC_OUT=tmp/lint.json \
+            -e SERVICE_NAME="KrakenD API Gateway" \
+            krakend:2.10.0 check -c "krakend.tmpl"
+
+      - name: Validate configuration structure
+        run: |
+          if [ ! -s tmp/lint.json ]; then
+            echo "❌ ERROR: KrakenD configuration validation failed!"
+            exit 1
+          fi
+
+          echo "✅ KrakenD configuration passed linting check"
+
+          # Check for warning patterns in the configuration
+          if grep -q '"WARNING"' tmp/lint.json; then
+            echo "⚠️ Warnings found in KrakenD configuration:"
+            grep -A 2 '"WARNING"' tmp/lint.json
+          fi
+
+          # Check for specific configuration best practices
+          if ! grep -q '"rate_limit":' tmp/lint.json; then
+            echo "⚠️ Consider adding rate limiting to your endpoints"
+          fi
+
+          if ! grep -q '"timeout":' tmp/lint.json; then
+            echo "⚠️ Consider setting explicit timeouts for your endpoints"
+          fi

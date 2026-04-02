@@ -1,0 +1,20 @@
+{
+  "endpoint": "/monitoring/templates/{id}/postgresql",
+  "method": "DELETE",
+  {{ include "auth0_input_headers.tmpl" }},
+  "extra_config": {
+    {{ include "auth0_validator.tmpl" }}
+  },
+  "backend": [
+    {
+      "host": [
+        {{ include "backend_host.tmpl" }}
+      ],
+      "method": "DELETE",
+      "url_pattern": "/monitoring/templates/{id}/postgresql",
+      "extra_config": {
+        {{ include "circuit_breaker.tmpl" }}
+      }
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "endpoint": "/uploads/image/jpeg/{imageId}",
+  "method": "GET",
+  "input_query_strings": ["token"],
+  "output_encoding": "no-op",
+  {{ include "auth0_input_headers.tmpl" }},
+
+  "backend": [
+    {
+      "host": [
+        {{ include "backend_host.tmpl" }}
+      ],
+      "method": "GET",
+      "encoding": "no-op",
+      "url_pattern": "/uploads/image/jpeg/{imageId}",
+      "extra_config": {
+        {{ include "circuit_breaker.tmpl" }},
+            "github.com/devopsfaith/krakend-martian": {
+                "header.Blacklist": {
+                    "scope": ["response"],
+                    "names": ["Access-Control-Allow-Origin"]
+                }
+            }
+      }
+    }
+  ]
+} 

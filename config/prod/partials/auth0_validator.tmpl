@@ -1,0 +1,12 @@
+"auth/validator": {
+  "auth_header_name": "X-Custom-Auth",
+  "propagate_claims": [
+    ["https://myapp.com/email", "x-email"]
+  ],
+  "alg": "RS256",
+  "audience": [
+    "https://dev-madtdk4jri0anvbi.us.auth0.com/api/v2/"
+  ],
+  "jwk_url": "https://accounts.console.01cloud.com/.well-known/jwks.json",
+  "operation_debug": true
+}

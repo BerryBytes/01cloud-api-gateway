@@ -1,0 +1,23 @@
+{
+  "endpoint": "/ws",
+   "input_query_strings": ["*"],
+  {{ include "auth0_input_headers.tmpl" }},
+  "backend": [
+    {
+      "host": [
+       "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+      ],
+      "url_pattern": "/ws",
+      "disable_host_sanitization": true,
+      "extra_config": {
+        {{ include "circuit_breaker.tmpl" }},
+        "github.com/devopsfaith/krakend/proxy": {
+          "is_websocket": true
+        },
+        "github.com/devopsfaith/krakend/router/proxy": {
+          "is_websocket": true
+        }
+      }
+    }
+  ]
+}

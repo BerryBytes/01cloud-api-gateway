@@ -1,0 +1,19 @@
+ {
+  "endpoint": "/cli/user/login/sso",
+  "method": "PUT",
+"input_headers":["*"],
+  "output_encoding": "no-op",
+  "backend": [
+    {
+      "host": [
+        {{ include "backend_host.tmpl" }}
+      ],
+      "method": "PUT",
+      "encoding": "no-op",
+      "url_pattern": "/user/login/sso",
+      "extra_config": {
+        {{ include "circuit_breaker.tmpl" }}
+      }
+    }
+  ]
+}

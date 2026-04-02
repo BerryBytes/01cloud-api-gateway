@@ -1,0 +1,13 @@
+{
+  "endpoint": "/swagger/swagger-ui.css",
+  "method": "GET",
+  "output_encoding": "no-op",
+  "backend": [
+    {
+      "host": [{{- include "backend_host.tmpl" -}}],
+      "method": "GET",
+      "url_pattern": "/swagger/swagger-ui.css",
+      "encoding": "no-op"
+    }
+  ]
+}

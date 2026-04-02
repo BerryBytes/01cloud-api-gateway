@@ -1,0 +1,2752 @@
+{
+  "$schema": "https://www.krakend.io/schema/v3.json",
+  "version": 3,
+  "name": "test-api-gateway",
+  "timeout": "60s",
+  "extra_config": {
+    
+  "security/cors": {
+  "allow_origins": [
+    "*"
+  ],
+  "allow_methods": [
+    "GET",
+    "HEAD",
+    "POST",
+    "OPTIONS",
+    "PUT",
+    "DELETE"
+  ],
+  "expose_headers": [
+    "Content-Length",
+    "Content-Type"
+  ],
+  "allow_headers": [
+    "Accept-Language",
+    "Content-Type",
+    "X-Api-Version",
+    "X-Custom-Auth",
+    "Authorization",         
+    "X-Email",             
+    "X-Circuit-Break"    
+  ],
+  "max_age": "12h",
+  "allow_credentials": false,
+  "debug": true
+}
+,
+     "telemetry/metrics": {
+          "collection_time": "60s",
+          "proxy_disabled": false,
+          "router_disabled": false,
+          "backend_disabled": false,
+          "endpoint_disabled": false,
+          "listen_address": ":8090"
+        },
+ "telemetry/opentelemetry": {
+          "service_name": "krakend_prometheus_service",
+          "metric_reporting_period": 1,
+          "exporters": {
+            "prometheus": [
+              {
+                "name": "local_prometheus",
+                "port": 9091,
+                "process_metrics": true,
+                "go_metrics": true
+              }
+            ]
+          }
+        }
+
+,
+      "telemetry/logging": {
+      "level": "DEBUG",
+      "prefix": "[KRAKEND]",
+      "syslog": false,
+      "stdout": true,
+      "access_enable": "true",
+      "access_log_format": "json",
+      "format": "json"
+  }
+
+  },
+  "endpoints": [
+    {
+        "endpoint": "/v1/echo/{path}",
+        "method": "GET",
+        "input_headers": ["Authorization"],
+        "output_encoding": "json-collection",
+        "extra_config": {
+                "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+        },
+        "backend": [
+          {
+            "is_collection": false,
+            "encoding": "json",
+            "host": [
+              "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+            ],
+            "url_pattern": "/api/{path}",
+            "extra_config": {
+              "qos/ratelimit/proxy": {
+  "max_rate": 0.5,
+  "capacity": 1
+}
+
+            }
+          }
+        ]
+    }
+    ,
+    {
+  "endpoint": "/subscriptions",
+  "method": "GET",
+   "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "GET",
+      "url_pattern": "/subscriptions",
+            "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+}
+,
+{
+  "endpoint": "/login",
+  "method": "POST",
+   "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "POST",
+      "url_pattern": "/user/login",
+      "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+},
+{
+  "endpoint": "/register",
+  "method": "POST",
+   "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "POST",
+      "url_pattern": "/user/register",
+           "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+}
+,
+{
+  "endpoint": "/projects",
+  "method": "GET",
+   "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "GET",
+      "url_pattern": "/projects",
+            "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+}
+,
+{
+  "endpoint": "/user/{id}",
+  "method": "GET",
+   "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "GET",
+      "url_pattern": "/user/{id}",
+            "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+}
+,
+{
+  "endpoint": "/payment/paymenthistory",
+  "method": "GET",
+   "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "GET",
+      "url_pattern": "/payment/paymenthistory",
+             "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      },
+            "input_query_strings":["*"]
+    }
+  ]
+}
+,
+{
+  "endpoint": "/organizations",
+  "method": "GET",
+    "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "GET",
+      "url_pattern": "/organizations",
+           "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+}
+,
+
+{
+  "endpoint": "/notification/get-unseen-count",
+  "method": "GET",
+    "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "GET",
+      "url_pattern": "/notification/get-unseen-count",
+         "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+},
+
+{
+  "endpoint": "/payment/threshold",
+  "method": "GET",
+    "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "GET",
+      "url_pattern": "/payment/threshold",
+             "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      },
+            "input_query_strings":["*"]
+    }
+  ]
+}
+,
+
+{
+  "endpoint": "/payment/invoice",
+  "method": "GET",
+  "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "GET",
+      "url_pattern": "/payment/invoice",
+            "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      },
+            "input_query_strings":["*"]
+    }
+  ]
+}
+,
+
+{
+  "endpoint": "/payment/paymentsetting",
+  "method": "GET",
+    "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "GET",
+      "url_pattern": "/payment/paymentsetting",
+             "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      },
+            "input_query_strings":["*"]
+    }
+  ]
+}
+,
+{
+  "endpoint": "/payment/paymentsetting",
+  "method": "PUT",
+   "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+  "extra_config": {
+          "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+  },
+  "backend": [
+    {
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+      "method": "PUT",
+      "url_pattern": "/payment/paymentsetting",
+         "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      },
+      "input_query_strings": [
+        "*"
+      ]
+    }
+  ]
+},
+
+{
+  "endpoint": "/regions",
+  "method": "GET",
+   "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+      "method": "GET",
+      "url_pattern": "/regions",
+             "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      },
+      "input_query_strings":["*"]
+    }
+  ]
+}
+,
+{
+  "endpoint": "/role/project/{id}",
+  "method": "GET",
+   "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+      "method": "GET",
+      "url_pattern": "/role/project/{id}",
+           "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+}
+,
+{
+  "endpoint": "/project/{id}",
+  "method": "GET",
+   "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "GET",
+      "url_pattern": "/project/{id}",
+        "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+}
+,
+{
+  "endpoint": "/plugins/active",
+  "method": "GET",
+    "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "GET",
+      "url_pattern": "/plugins/active",
+             "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+},
+{
+  "endpoint": "/project/{id}/applications",
+  "method": "GET",
+      "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "GET",
+      "url_pattern": "/project/{id}/applications",
+            "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+}
+,
+
+{
+  "endpoint": "/project/{id}",
+  "method": "DELETE",
+  "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "DELETE",
+      "url_pattern": "/project/{id}",
+            "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+},
+{
+  "endpoint": "/project/{id}/activation",
+  "method": "POST",
+   "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+      "method": "POST",
+      "url_pattern": "/project/{id}/activation",
+      "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+}
+,
+
+{
+  "endpoint": "/sidebar",
+  "method": "GET",
+    "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "GET",
+      "url_pattern": "/sidebar",
+           "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      },
+            "input_query_strings":["*"]
+    }
+  ]
+}
+,
+{
+  "endpoint": "/user/logout",
+  "method": "POST",
+   "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "POST",
+      "url_pattern": "/user/logout",
+            "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+},
+{
+  "endpoint": "/project",
+  "method": "POST",
+  "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "POST",
+      "url_pattern": "/project",
+             "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+}
+,
+{
+  "endpoint": "/application",
+  "method": "POST",
+   "output_encoding": "json", 
+     "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "POST",
+      "url_pattern": "/application",
+        "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+}
+,
+{
+  "endpoint": "/get-regions",
+  "method": "POST",
+   "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+
+   },
+  "backend": [
+    {
+
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "POST",
+      "url_pattern": "/get-regions",
+          "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+}
+,
+{
+  "endpoint": "/application/{application_id}",
+  "method": "GET",
+  "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "GET",
+      "url_pattern": "/application/{application_id}",
+          "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+}
+,
+{
+  "endpoint": "/application/{application_id}/available-resource",
+  "method": "GET",
+  "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "GET",
+      "url_pattern": "/application/{application_id}/available-resource",
+            "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+}
+,
+{
+  "endpoint": "/applications",
+  "method": "GET",
+    "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "GET",
+      "url_pattern": "/applications",
+            "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+}
+,
+{
+  "endpoint": "/environment/{envirnoment_id}/overview",
+  "method": "GET",
+  "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "GET",
+      "url_pattern": "/environment/{envirnoment_id}/overview",
+            "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+}
+,
+{
+  "endpoint": "/environment/{envirnoment_id}/addons",
+  "method": "GET",
+  "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "GET",
+      "url_pattern": "/environment/{envirnoment_id}/addons",
+             "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+}
+,
+{
+  "endpoint": "/environment/{envirnoment_id}/fetch-state",
+  "method": "GET",
+  "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "GET",
+      "url_pattern": "/environment/{envirnoment_id}/fetch-state",
+         "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+}
+,
+{
+  "endpoint": "/environment/{envirnoment_id}",
+  "method": "GET",
+  "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "GET",
+      "url_pattern": "/environment/{envirnoment_id}",
+         "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+}
+,
+{
+  "endpoint": "/public/file/external-logger.json",
+  "method": "GET",
+    "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "GET",
+      "url_pattern": "/public/file/external-logger.json",
+          "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+}
+,
+{
+  "endpoint": "/notifications",
+  "method": "GET",
+    "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+     "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "GET",
+      "url_pattern": "/notifications",
+             "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+}
+,
+{
+  "endpoint": "/organization/{id}/switch",
+  "method": "GET",
+    "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "GET",
+      "url_pattern": "/organization/{id}/switch",
+            "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+}
+,
+{
+  "endpoint": "/payment/invoice/{id}/download",
+  "method": "GET",
+    "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "GET",
+      "url_pattern": "/payment/invoice/{id}/download",
+         "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+}
+,
+{
+  "endpoint": "/plugin/{plugin_id}/latest-version",
+  "method": "GET",
+        "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "GET",
+      "url_pattern": "/plugin/{plugin_id}/latest-version",
+             "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+}
+,
+{
+  "endpoint": "/plugin-version/{plugin_verision}/config",
+  "method": "GET",
+        "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "GET",
+      "url_pattern": "/plugin-version/{plugin_verision}/config",
+            "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+}
+,
+{
+  "endpoint": "/plugin-version/{plugin_verision}/settings",
+  "method": "GET",
+        "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "GET",
+      "url_pattern": "/plugin-version/{plugin_verision}/settings",
+            "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+}
+,
+{
+  "endpoint": "/plugins",
+  "method": "GET",
+      "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "GET",
+      "url_pattern": "/plugins",
+            "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+}
+,
+{
+  "endpoint": "/project/{id}/user/{userId}",
+  "method": "GET",
+  "output_encoding": "json",
+   "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+
+  "extra_config": {
+          "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+  },
+  "backend": [
+    {
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+      "method": "GET",
+      "url_pattern": "/project/{id}/user/{userId}",
+      "extra_config": {
+        "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+},
+{
+  "endpoint": "/rename/environment/{envirnoment_id}",
+  "method": "PUT",
+   "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "PUT",
+      "url_pattern": "/rename/environment/{envirnoment_id}",
+          "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+}
+,
+
+{
+  "endpoint": "/resources",
+  "method": "GET",
+   "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "GET",
+      "url_pattern": "/resources",
+          "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      },
+            "input_query_strings":["*"]
+    }
+  ]
+}
+,
+{
+  "endpoint": "/role/environment/{envirnoment_id}",
+  "method": "GET",
+   "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "GET",
+      "url_pattern": "/role/environment/{envirnoment_id}",
+           "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+}
+,
+{
+  "endpoint": "/roles",
+  "method": "GET",
+   "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "GET",
+      "url_pattern": "/roles",
+           "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+}
+,
+{
+  "endpoint": "/user/tokens",
+  "method": "GET",
+  "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "GET",
+      "url_pattern": "/user/tokens",
+             "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+},
+{
+  "endpoint": "/projects",
+  "method": "POST",
+   "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "POST",
+      "url_pattern": "/projects",
+           "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+}
+,
+{
+  "endpoint": "/environment",
+  "method": "POST",
+   "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "POST",
+      "url_pattern": "/environment",
+            "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+}
+,
+{
+  "endpoint": "/user/tokens",
+  "method": "POST",
+   "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "POST",
+      "url_pattern": "/user/tokens",
+            "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+}
+,
+{
+  "endpoint": "/user/{id}",
+  "method": "PUT",
+   "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "PUT",
+      "url_pattern": "/user/{id}",
+            "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+}
+,
+{
+  "endpoint": "/user-invite-request",
+  "method": "POST",
+   "input_headers": [
+        "X-Custom-Auth",
+        "Authorization",
+        "Accept",
+        "X-Api-Version",
+        "Origin",
+        "Referer",
+        "User-Agent",
+        "x-email",
+        "X-Circuit-Break"
+      ],
+   "extra_config":{
+        "auth/validator": {
+          "auth_header_name": "X-Custom-Auth",
+          "propagate_claims": [
+            [
+              "https://myapp.com/email",
+              "x-email"
+            ]
+          ],
+          "alg": "RS256",
+          "audience": [
+            "https://dev-qjq8cszju2kp1lxu.us.auth0.com/api/v2/"
+          ],
+          "jwk_url": "https://dev-qjq8cszju2kp1lxu.us.auth0.com/.well-known/jwks.json"
+        }
+   },
+  "backend": [
+    {
+      "host": [
+        "http://cloud-api.01cloud-staging.svc.cluster.local:8081"
+
+      ],
+       "method": "POST",
+      "url_pattern": "/user-invite-request",
+            "extra_config": {
+          "qos/circuit-breaker": {
+  "interval": 60,
+  "timeout": 10,
+  "max_errors": 1,
+  "name": "cb-myendpoint-1",
+  "log_status_change": true
+}
+
+      }
+    }
+  ]
+}
+
+  ]
+}

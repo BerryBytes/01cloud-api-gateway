@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: tyk-redis
+  namespace: 01cloud-stable
+  labels:
+    app: tyk-redis
+spec:
+  replicas: 1
+  serviceName: tyk-redis
+  selector:
+    matchLabels:
+      app: tyk-redis
+  template:
+    metadata:
+      labels:
+        app: tyk-redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:4.0-alpine
+        ports:
+        - containerPort: 6379
+        volumeMounts:
+        - name: redis-data
+          mountPath: /data
+        resources:
+          requests:
+            memory: "25Mi"
+            cpu: "25m"
+          limits:
+            memory: "51Mi"
+            cpu: "50m"
+  volumeClaimTemplates:
+  - metadata:
+      name: redis-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tyk-redis
+  namespace: 01cloud
+  labels:
+    app: tyk-redis
+spec:
+  ports:
+  - port: 6379
+    targetPort: 6379
+    protocol: TCP
+  selector:
+    app: tyk-redis
+  type: ClusterIP

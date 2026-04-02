@@ -1,0 +1,26 @@
+{
+  "endpoint": "/plugin-category",
+  "method": "GET",
+  "input_query_strings": [
+    "*"
+  ],
+  {{ include "auth0_input_headers.tmpl" }},
+  "extra_config": {
+    {{ include "auth0_validator.tmpl" }}
+  },
+  "backend": [
+    {
+      "host": [
+        {{ include "backend_host.tmpl" }}
+      ],
+      "method": "GET",
+      "url_pattern": "/plugin-category",
+      "input_query_strings": [
+       "*"
+      ],
+      "extra_config": {
+        {{ include "circuit_breaker.tmpl" }}
+      }
+    }
+  ]
+}

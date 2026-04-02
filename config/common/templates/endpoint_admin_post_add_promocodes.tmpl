@@ -1,0 +1,18 @@
+{
+  "endpoint": "/payment/promocode",
+  "method": "POST",
+  {{include "auth0_input_headers.tmpl"}},
+   "extra_config":{
+  {{ include "auth0_validator.tmpl" }},
+          {{ include "circuit_breaker.tmpl" }}
+   },
+  "backend": [
+    {
+      "host": [
+        {{ include "backend_host.tmpl" }}
+      ],
+       "method": "POST",
+      "url_pattern": "/payment/promocode"
+    }
+  ]
+}

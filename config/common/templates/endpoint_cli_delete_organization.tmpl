@@ -1,0 +1,17 @@
+{
+  "endpoint": "/cli/organization",
+  "method": "DELETE",
+  {{ include "auth0_input_headers.tmpl" }},
+  "backend": [
+    {
+      "host": [
+        {{ include "backend_host.tmpl" }}
+      ],
+      "method": "DELETE",
+      "url_pattern": "/organization",
+      "extra_config": {
+        {{ include "circuit_breaker.tmpl" }}
+      }
+    }
+  ]
+}

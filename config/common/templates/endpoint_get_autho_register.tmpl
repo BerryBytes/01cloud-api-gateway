@@ -1,0 +1,60 @@
+{
+  "endpoint": "/user/new",
+  "method": "GET",
+  "input_headers":["*"],
+  "extra_config": {
+      "proxy": {
+      "static": {
+        "strategy": "errored",
+        "data": {
+          "status_code": 503,
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": "user is already registered.If login doesnt work please contact admin"
+        }
+      }
+    },
+"auth/validator": {
+  "auth_header_name": "X-Custom-Auth",
+  "propagate_claims": [
+    ["https://myapp.com/email", "x-email"],
+    ["https://myapp.com/email_verified", "x-email-verified"],
+    ["https://myapp.com/first_name", "x-first-name"],
+    ["https://myapp.com/last_name", "x-last-name"],
+    ["https://myapp.com/image", "x-image"],
+    ["https://myapp.com/name", "x-name"],
+    ["https://myapp.com/created_at", "x-created-at"],
+    ["https://myapp.com/updated_at", "x-updated-at"],
+    ["https://myapp.com/company", "x-company"],
+    ["https://myapp.com/designation", "x-designation"],
+    ["https://myapp.com/active", "x-active"],
+    ["https://myapp.com/is_admin", "x-is-admin"],
+    ["https://myapp.com/address_updated", "x-address-updated"],
+    ["https://myapp.com/quotas", "x-quotas"],
+    ["https://myapp.com/used_demo", "x-used-demo"],
+    ["https://myapp.com/reference", "x-reference"],
+    ["https://myapp.com/roles", "x-roles"]
+  ],
+  "alg": "RS256",
+  "audience": [
+    "https://dev-oknhd5hivohn3jyg.us.auth0.com/api/v2/"
+  ],
+  "jwk_url": "https://dev-oknhd5hivohn3jyg.us.auth0.com/.well-known/jwks.json",
+  "operation_debug": true
+}
+
+  },
+  "backend": [
+    {
+      "host": [
+        {{ include "backend_host.tmpl" }}
+      ],
+      "extra_config": {
+        {{ include "circuit_breaker.tmpl" }}
+      },
+      "method": "GET",
+      "url_pattern": "/user/new"
+    }
+  ]
+}

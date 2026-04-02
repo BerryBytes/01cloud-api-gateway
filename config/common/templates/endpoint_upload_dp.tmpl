@@ -1,0 +1,44 @@
+{
+  "endpoint": "/upload-gcs",
+  "method": "POST",
+  {{ include "auth0_input_headers.tmpl" }},
+  "output_encoding": "json",
+  "input_query_strings": ["*"],
+  "extra_config": {
+    {{ include "auth0_validator.tmpl" }},
+    "telemetry/logging": {
+      "level": "DEBUG",
+      "prefix": "[KRAKEND]",
+      "stdout": true,
+      "syslog": false
+    }
+  },
+  "backend": [
+    {
+      "host": [
+        {{ include "backend_host.tmpl" }}
+      ],
+      "url_pattern": "/upload-gcs",
+      "method": "POST",
+      "is_collection": false,
+      "headers_to_pass": [
+        "Authorization",
+        "Content-Type",
+        "X-Custom-Auth",
+        "X-API-Version"
+      ],
+      "extra_config": {
+        {{ include "circuit_breaker.tmpl" }},
+        "github.com/devopsfaith/krakend-http": {
+          "timeout": "60s",
+          "retries": 3,
+          "read_timeout": "60s",
+          "write_timeout": "60s"
+        },
+        "backend/http": {
+          "return_error_code": true
+        }
+      }
+    }
+  ]
+}

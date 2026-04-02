@@ -1,0 +1,17 @@
+{
+  "endpoint": "/cli/environment/{environment_id}/stop",
+  "method": "POST",
+  {{include "auth0_input_headers.tmpl"}},
+  "backend": [
+    {
+      "host": [
+        {{ include "backend_host.tmpl" }}
+      ],
+       "method": "POST",
+      "url_pattern": "/environment/{environment_id}/stop",
+            "extra_config": {
+          {{ include "circuit_breaker.tmpl" }}
+      }
+    }
+  ]
+}

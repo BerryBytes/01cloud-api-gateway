@@ -1,0 +1,16 @@
+{
+  "endpoint": "/user/login/external",
+  "method": "POST",
+  "backend": [
+    {
+      "host": [
+        {{ include "backend_host.tmpl" }}
+      ],
+      "method": "POST",
+      "url_pattern": "/user/login/external",
+      "extra_config": {
+          {{ include "circuit_breaker.tmpl" }}
+      }
+    }
+  ]
+}

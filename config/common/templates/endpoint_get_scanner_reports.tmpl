@@ -1,0 +1,25 @@
+{
+  "endpoint": "/scanner/{id}/reports",
+  "method": "GET",
+  "output_encoding": "json",
+ {{ include "auth0_input_headers.tmpl" }},
+  "extra_config": {
+    {{ include "auth0_validator.tmpl" }}
+  },
+  "backend": [
+    {
+      "host": [
+        {{ include "backend_host.tmpl" }}
+      ],
+      "method": "GET",
+      "url_pattern": "/scanner/{id}/reports",
+      "is_collection": true,
+      "mapping": {
+        "collection": "reports"
+      },
+      "extra_config": {
+        {{ include "circuit_breaker.tmpl" }}
+      }
+    }
+  ]
+}

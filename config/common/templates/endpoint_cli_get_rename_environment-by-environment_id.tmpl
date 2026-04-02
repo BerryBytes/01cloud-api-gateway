@@ -1,0 +1,17 @@
+{
+  "endpoint": "/cli/rename/environment/{environment_id}",
+  "method": "PUT",
+  {{ include "auth0_input_headers.tmpl" }},
+  "backend": [
+    {
+      "host": [
+        {{ include "backend_host.tmpl" }}
+      ],
+       "method": "PUT",
+      "url_pattern": "/rename/environment/{environment_id}",
+          "extra_config": {
+          {{ include "circuit_breaker.tmpl" }}
+      }
+    }
+  ]
+}

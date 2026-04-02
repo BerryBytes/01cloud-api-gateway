@@ -1,0 +1,16 @@
+"extra_config": {
+  "telemetry/logging": {
+  "level": "DEBUG",
+  "prefix": "[KRAKEND]",
+  "syslog": false,
+  "stdout": true,
+  "access_enable": "true",
+  "access_log_format": "json",
+  "format": "json"
+},
+  "auth/validator": {
+    "alg": "RS256",
+    "jwk_url": "http://sso.test.menuboardmanager.com/realms/test/protocol/openid-connect/certs",
+    "disable_jwk_security": true
+  }
+}

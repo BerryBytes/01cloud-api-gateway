@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tyk-gateway
+  namespace: 01cloud-stable
+  labels:
+    app: tyk-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tyk-gateway
+  template:
+    metadata:
+      labels:
+        app: tyk-gateway
+    spec:
+      containers:
+      - name: tyk-gateway
+        image: docker.tyk.io/tyk-gateway/tyk-gateway:latest
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+        - name: tyk-conf
+          mountPath: /opt/tyk-gateway/tyk.conf
+          subPath: tyk.conf
+        - name: tyk-conf
+          mountPath: /opt/tyk-gateway/apps/test-ws-api.json
+          subPath: test-ws-api.json
+        env:
+        - name: TYK_GW_STORAGE_HOST
+          value: "tyk-redis"
+        - name: TYK_GW_STORAGE_PORT
+          value: "6379"
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        readinessProbe:
+          httpGet:
+            path: /hello
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /hello
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+      volumes:
+      - name: tyk-conf
+        configMap:
+          name: tyk-conf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tyk-gateway
+  namespace: 01cloud-stable
+  labels:
+    app: tyk-gateway
+spec:
+  ports:
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+    name: http
+  selector:
+    app: tyk-gateway
+  type: ClusterIP

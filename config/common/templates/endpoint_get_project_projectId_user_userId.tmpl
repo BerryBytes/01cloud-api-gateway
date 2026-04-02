@@ -1,0 +1,21 @@
+{
+  "endpoint": "/project/{id}/user/{user_id}",
+  "method": "GET",
+  "output_encoding": "json",
+  {{ include "auth0_input_headers.tmpl" }},
+  "extra_config": {
+    {{ include "auth0_validator.tmpl" }}
+  },
+  "backend": [
+    {
+      "host": [
+        {{ include "backend_host.tmpl" }}
+      ],
+      "method": "GET",
+      "url_pattern": "/project/{id}/user/{user_id}",
+      "extra_config": {
+        {{ include "circuit_breaker.tmpl" }}
+      }
+    }
+  ]
+}

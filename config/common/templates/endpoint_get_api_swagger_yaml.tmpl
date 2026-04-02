@@ -1,0 +1,18 @@
+{
+  "endpoint": "/docs/swagger.yaml",
+  "method": "GET",
+  "output_encoding": "no-op",
+  "backend": [
+    {
+      "host": [
+        {{- include "backend_host.tmpl" -}}
+      ],
+      "method": "GET",
+      "url_pattern": "/docs/swagger.yaml",
+      "encoding": "no-op",
+      "extra_config": {
+        {{ include "circuit_breaker.tmpl" }}
+      }
+    }
+  ]
+}

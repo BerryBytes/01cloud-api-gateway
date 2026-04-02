@@ -1,0 +1,17 @@
+{
+  "endpoint": "/cli/project/{id}",
+  "method": "PUT",
+  {{ include "auth0_input_headers.tmpl" }},
+  "backend": [
+    {
+      "host": [
+        {{ include "backend_host.tmpl" }}
+      ],
+      "method": "PUT",
+      "url_pattern": "/project/{id}",
+      "extra_config": {
+        {{ include "circuit_breaker.tmpl" }}
+      }
+    }
+  ]
+}

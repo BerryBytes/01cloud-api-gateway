@@ -1,0 +1,17 @@
+{
+  "endpoint": "/cli/environment/{environment_id}/overview",
+  "method": "GET",
+ {{ include "auth0_input_headers.tmpl" }},
+  "backend": [
+    {
+      "host": [
+        {{ include "backend_host.tmpl" }}
+      ],
+       "method": "GET",
+      "url_pattern": "/environment/{environment_id}/overview",
+            "extra_config": {
+          {{ include "circuit_breaker.tmpl" }}
+      }
+    }
+  ]
+}

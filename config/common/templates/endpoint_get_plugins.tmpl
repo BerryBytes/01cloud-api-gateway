@@ -1,0 +1,36 @@
+{
+  "endpoint": "/plugins",
+  "method": "GET",
+  "input_query_strings": [
+    "support_ci",
+    "size",
+    "page",
+    "is_managed_service",
+    "search"
+  ],
+  {{ include "auth0_input_headers.tmpl" }},
+  "extra_config": {
+    {{ include "auth0_validator.tmpl" }}
+  },
+  "backend": [
+    {
+      "host": [
+        {{ include "backend_host.tmpl" }}
+      ],
+      "method": "GET",
+      "url_pattern": "/plugins",
+      "input_query_strings": [
+        "support_ci",
+        "size",
+        "page",
+        "is_managed_service",
+        "search"
+      ],
+      "extra_config": {
+        {{ include "circuit_breaker.tmpl" }},
+          {{include "martian_cache_modifier.tmpl"}},
+          {{ include "cache_control.tmpl"}}
+      }
+    }
+  ]
+}

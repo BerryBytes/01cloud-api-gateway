@@ -1,0 +1,17 @@
+{
+  "endpoint": "/cli/project/{id}/user",
+  "method": "POST",
+  {{ include "auth0_input_headers.tmpl" }},
+  "backend": [
+    {
+      "host": [
+        {{ include "backend_host.tmpl" }}
+      ],
+      "method": "POST",
+      "url_pattern": "/project/{id}/user",
+      "extra_config": {
+        {{ include "circuit_breaker.tmpl" }}
+      }
+    }
+  ]
+}

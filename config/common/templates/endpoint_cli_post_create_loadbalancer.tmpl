@@ -1,0 +1,19 @@
+{
+  "endpoint": "/cli/loadbalancer",
+  "method": "POST",
+  {{ include "auth0_input_headers.tmpl" }},
+  "output_encoding": "json",
+  "backend": [
+    {
+      "host": [
+        {{ include "backend_host.tmpl" }}
+      ],
+      "method": "POST",
+      "url_pattern": "/loadbalancer",
+      "is_collection": false,  
+      "extra_config": {
+        {{ include "circuit_breaker.tmpl" }}
+      }
+    }
+  ]
+}

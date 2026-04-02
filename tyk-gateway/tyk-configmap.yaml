@@ -1,0 +1,92 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tyk-conf
+  namespace: 01cloud-stable
+data:
+  tyk.conf: |
+    {
+      "log_level": "info" ,
+      "listen_port": 8080,
+      "secret": "CHANGE_ME_TYK_GW_SECRET",
+      "template_path": "/opt/tyk-gateway/templates",
+      "tyk_js_path": "/opt/tyk-gateway/js/tyk.js",
+      "middleware_path": "/opt/tyk-gateway/middleware",
+      "use_db_app_configs": false,
+      "app_path": "/opt/tyk-gateway/apps/",
+      "storage": {
+        "type": "redis",
+        "host": "tyk-redis",
+        "port": 6379,
+        "username": "",
+        "password": "",
+        "database": 0,
+        "optimisation_max_idle": 2000,
+        "optimisation_max_active": 4000,
+        "enable_cluster": false
+      },
+      "enable_analytics": false,
+      "analytics_config": {
+        "type": "",
+        "ignored_ips": []
+      },
+      "health_check": {
+        "enable_health_checks": false,
+        "health_check_value_timeouts": 60
+      },
+      "enable_non_transactional_rate_limiter": true,
+      "enable_sentinel_rate_limiter": false,
+      "enable_redis_rolling_limiter": false,
+      "allow_master_keys": false,
+      "policies": {
+        "policy_source": "file",
+        "policy_path": "/opt/tyk-gateway/policies"
+      },
+      "hash_keys": true,
+      "close_connections": false,
+      "http_server_options": {
+        "enable_websockets": true
+      },
+      "allow_insecure_configs": true,
+      "security": {
+        "force_ssl": false,
+        "skip_ssl_verify": true
+      },
+      "coprocess_options": {
+        "enable_coprocess": true,
+        "coprocess_grpc_server": ""
+      },
+      "enable_bundle_downloader": true,
+      "bundle_base_url": "",
+      "global_session_lifetime": 100,
+      "force_global_session_lifetime": false,
+      "max_idle_connections_per_host": 500,
+      "enable_jsvm": true
+    }
+  test-ws-api.json: |
+    {
+      "name": "Test WebSocket API",
+      "slug": "test-ws-api",
+      "api_id": "2",
+      "org_id": "1",
+      "use_keyless": true,
+      "version_data": {
+        "not_versioned": true,
+        "versions": {
+          "Default": {
+            "name": "Default",
+            "use_extended_paths": true
+          }
+        }
+      },
+      "proxy": {
+        "listen_path": "/ws",
+        "strip_listen_path": true,
+        "target_url": "wss://api.01cloud.com/ws",
+        "connection_type": "websocket",
+        "transport": {
+          "ssl_insecure_skip_verify": true
+        }
+      },
+      "active": true
+    }

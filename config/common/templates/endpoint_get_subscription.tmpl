@@ -1,0 +1,19 @@
+{
+  "endpoint": "/subscriptions",
+  "method": "GET",
+  {{include "auth0_input_headers.tmpl"}},
+   "extra_config":{
+  {{ include "auth0_validator.tmpl" }},
+          {{ include "circuit_breaker.tmpl" }},
+             {{include "rate_limit_backend.tmpl"}}
+   },
+  "backend": [
+    {
+      "host": [
+        {{ include "backend_host.tmpl" }}
+      ],
+       "method": "GET",
+      "url_pattern": "/subscriptions"
+    }
+  ]
+}

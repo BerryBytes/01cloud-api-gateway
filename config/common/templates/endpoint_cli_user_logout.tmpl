@@ -1,0 +1,17 @@
+{
+  "endpoint": "/cli/user/logout",
+  "method": "POST",
+  {{include "auth0_input_headers.tmpl"}},
+  "backend": [
+    {
+      "host": [
+        {{ include "backend_host.tmpl" }}
+      ],
+       "method": "POST",
+      "url_pattern": "/user/logout",
+            "extra_config": {
+          {{ include "circuit_breaker.tmpl" }}
+      }
+    }
+  ]
+}

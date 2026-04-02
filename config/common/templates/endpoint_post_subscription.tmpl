@@ -1,0 +1,23 @@
+{
+  "endpoint": "/subscription",
+  "method": "POST",
+  {{include "auth0_input_headers.tmpl"}},
+   "extra_config":{
+  {{ include "auth0_validator.tmpl" }},
+    {{include "cache_control.tmpl"}}
+   },
+  "backend": [
+    {
+      "host": [
+        {{ include "backend_host.tmpl" }}
+      ],
+       "method": "POST",
+      "url_pattern": "/subscription",
+            "extra_config": {
+          {{ include "circuit_breaker.tmpl" }},
+          {{include "martian_cache_modifier.tmpl"}},
+          {{ include "cache_control.tmpl"}}
+      }
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+ "github_com/devopsfaith/krakend-cors": {
+      "allow_origins": [ "http://localhost:3000","https://console.01cloud.com","https://admin.01cloud.com"],
+      "allow_methods": [    "GET",
+    "HEAD",
+    "POST",
+    "OPTIONS",
+    "PUT",
+    "DELETE"],
+      "max_age": "12h",
+         "allow_headers": [
+    "Accept-Language",
+    "Content-Type",
+    "X-Api-Version",
+    "X-Custom-Auth",
+    "Authorization",         
+    "X-Email",             
+    "X-Circuit-Break"   ,
+    "X-PERSONAL-TOKEN"
+  ],
+    "expose_headers": [
+    "Content-Length",
+    "Content-Type",
+    "Content-Disposition",
+    "Cache-Control"
+  ],
+    "allow_credentials": false
+  
+    }
+   

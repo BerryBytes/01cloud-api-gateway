@@ -1,0 +1,22 @@
+{
+  "endpoint": "/profile",
+  "method": "GET",
+  {{ include "auth0_input_headers.tmpl" }},
+"input_headers":["*"],
+  "extra_config": {
+    {{ include "rate_limit_backend.tmpl"}},
+    {{ include "auth0_validator.tmpl" }}
+  },
+  "backend": [
+    {
+      "host": [
+        {{ include "backend_host.tmpl" }}
+      ],
+      "method": "GET",
+      "url_pattern": "/profile",
+      "extra_config": {
+        {{ include "circuit_breaker.tmpl" }}
+      }
+    }
+  ]
+}

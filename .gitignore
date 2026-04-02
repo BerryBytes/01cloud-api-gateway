@@ -1,0 +1,28 @@
+# KrakenD generated output
+tmp/out.json
+tmp/lint.json
+out.json
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+*.kubeconfig
+
+# OS/editor
+**/.DS_Store
+.idea/
+.vscode/
+.codex/
+
+# Tooling caches
+.cache/
+coverage/
+dist/
+build/
+node_modules/

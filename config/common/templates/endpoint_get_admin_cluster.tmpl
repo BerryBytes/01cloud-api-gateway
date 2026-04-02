@@ -1,0 +1,20 @@
+{
+  "endpoint": "/admin/cluster/{id}",
+  "method": "GET",
+  {{ include "auth0_input_headers.tmpl" }},
+   "extra_config":{
+  {{ include "auth0_validator.tmpl" }}
+   },
+  "backend": [
+    {
+      "host": [
+        {{ include "backend_host.tmpl" }}
+      ],
+       "method": "GET",
+      "url_pattern": "/admin/cluster/{id}",
+      "extra_config": {
+          {{ include "circuit_breaker.tmpl" }}
+      }
+    }
+  ]
+}
