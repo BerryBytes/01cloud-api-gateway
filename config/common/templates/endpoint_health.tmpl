@@ -1,0 +1,15 @@
+{
+  "endpoint": "/healthz",
+  "method": "GET",
+  "input_headers": [],
+  "backend": [
+    {
+      "host": [
+        {{ include "backend_host.tmpl" }}
+      ],
+      "method": "GET",
+      "url_pattern": "/healthz",
+      "extra_config": {}
+    }
+  ]
+}
