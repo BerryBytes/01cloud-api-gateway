@@ -1,5 +1,5 @@
 {
-  "endpoint": "/health",
+  "endpoint": "/healthz",
   "method": "GET",
   "input_headers": [],
   "backend": [
@@ -8,7 +8,7 @@
         {{ include "backend_host.tmpl" }}
       ],
       "method": "GET",
-      "url_pattern": "/health",
+      "url_pattern": "/healthz",
       "extra_config": {}
     }
   ]
